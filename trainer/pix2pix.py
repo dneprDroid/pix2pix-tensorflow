@@ -28,7 +28,7 @@ parser.add_argument("--checkpoint", default=None,
 
 ################################################################
 parser.add_argument("--seed", type=int)
-parser.add_argument("--max_steps", default=2**32, type=int, help="number of training steps (0 to disable)")
+parser.add_argument("--max_steps", default=2 ** 32, type=int, help="number of training steps (0 to disable)")
 parser.add_argument("--max_epochs", default=200, type=int, help="number of training epochs")
 parser.add_argument("--summary_freq", type=int, default=100, help="update summaries every summary_freq steps")
 parser.add_argument("--progress_freq", type=int, default=50, help="display progress every progress_freq steps")
@@ -53,6 +53,11 @@ parser.add_argument("--lr", type=float, default=0.0002, help="initial learning r
 parser.add_argument("--beta1", type=float, default=0.5, help="momentum term of adam")
 parser.add_argument("--l1_weight", type=float, default=100.0, help="weight on L1 term for generator gradient")
 parser.add_argument("--gan_weight", type=float, default=1.0, help="weight on GAN term for generator gradient")
+
+# GCloud
+parser.add_argument(
+    '--job-dir',
+    help='Cloud storage bucket to export the model and store temp files')
 
 # export options
 parser.add_argument("--output_filetype", default="png", choices=["png", "jpeg"])
