@@ -28,7 +28,7 @@ parser.add_argument("--checkpoint", default=None,
 
 ################################################################
 parser.add_argument("--seed", type=int)
-parser.add_argument("--max_steps", default=100, type=int, help="number of training steps (0 to disable)")
+parser.add_argument("--max_steps", default=2**32, type=int, help="number of training steps (0 to disable)")
 parser.add_argument("--max_epochs", default=200, type=int, help="number of training epochs")
 parser.add_argument("--summary_freq", type=int, default=100, help="update summaries every summary_freq steps")
 parser.add_argument("--progress_freq", type=int, default=50, help="display progress every progress_freq steps")
