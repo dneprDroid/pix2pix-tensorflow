@@ -6,4 +6,4 @@ echo $JOB_NAME
 export JOB_DIR=gs://$BUCKET_NAME/$JOB_NAME
 export REGION=us-east1
 
-gcloud ml-engine local train --job-dir $JOB_DIR --module-name pix2pix  --package-path ./
+gcloud ml-engine local train --job-dir $JOB_DIR --module-name trainer.pix2pix  --package-path ./trainer
