@@ -37,7 +37,7 @@ parser.add_argument("--checkpoint", default=None,
 ################################################################
 parser.add_argument("--seed", type=int)
 parser.add_argument("--max_steps",
-                    default=1,  # 2 ** 32,
+                    default=2 ** 32,
                     type=int,
                     help="number of training steps (0 to disable)")
 parser.add_argument("--max_epochs", default=200, type=int, help="number of training epochs")
