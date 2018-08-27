@@ -15,6 +15,9 @@ import collections
 import math
 import time
 
+print('tensorflow version: %s' % tf.__version__)
+print('------------------------------------')
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--which_direction", type=str, default="BtoA", choices=["AtoB", "BtoA"])

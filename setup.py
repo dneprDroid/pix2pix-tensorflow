@@ -11,7 +11,7 @@ setup(name='pix_pix',
       author_email='ovechko.056@gmail.com',
       license='Unlicense',
       install_requires=[
-          'tensorflow',
+          'tensorflow=1.10.0',
           'numpy',
           'argparse'],
       zip_safe=False)
