@@ -17,7 +17,7 @@ import time
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--which_direction", type=str, default="AtoB", choices=["AtoB", "BtoA"])
+parser.add_argument("--which_direction", type=str, default="BtoA", choices=["AtoB", "BtoA"])
 
 parser.add_argument("--input_dir", default='facades/train', help="path to folder containing images")
 parser.add_argument("--mode", default='train', choices=["train", "test", "export"])
@@ -571,13 +571,13 @@ def append_index(filesets, step=False):
 
 
 def copy_dir(src, dest):
-    if not file_io.file_exists(src):
-        raise Exception("Src dir doesn't exist at %s" % src)
-    if not file_io.file_exists(dest):
-        raise Exception("Dest dir doesn't exist at %s" % dest)
     if not file_io.is_directory(src):
         copy_file(src, dest)
         return
+    if not file_io.file_exists(src):
+        file_io.create_dir(src)
+    if not file_io.file_exists(dest):
+        file_io.create_dir(dest)
     for filename in file_io.list_directory(src):
         new_src = os.path.join(src, filename)
         new_dest = os.path.join(dest, filename)
