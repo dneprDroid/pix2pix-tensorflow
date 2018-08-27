@@ -16,6 +16,9 @@ import math
 import time
 
 parser = argparse.ArgumentParser()
+
+parser.add_argument("--which_direction", type=str, default="AtoB", choices=["AtoB", "BtoA"])
+
 parser.add_argument("--input_dir", default='facades/train', help="path to folder containing images")
 parser.add_argument("--mode", default='train', choices=["train", "test", "export"])
 parser.add_argument("--output_dir", default='facades_train', help="where to put output files")
@@ -47,7 +50,6 @@ parser.add_argument("--aspect_ratio", type=float, default=1.0, help="aspect rati
 parser.add_argument("--lab_colorization", action="store_true",
                     help="split input image into brightness (A) and color (B)")
 parser.add_argument("--batch_size", type=int, default=1, help="number of images in batch")
-parser.add_argument("--which_direction", type=str, default="AtoB", choices=["AtoB", "BtoA"])
 parser.add_argument("--ngf", type=int, default=64, help="number of generator filters in first conv layer")
 parser.add_argument("--ndf", type=int, default=64, help="number of discriminator filters in first conv layer")
 parser.add_argument("--scale_size", type=int, default=286, help="scale images to this size before cropping to 256x256")
