@@ -574,11 +574,11 @@ def append_index(filesets, step=False):
 
 
 def copy_dir(src, dest):
+    if not file_io.file_exists(src):
+        raise Exception("Src dir doesn't exist at %s" % src)
     if not file_io.is_directory(src):
         copy_file(src, dest)
         return
-    if not file_io.file_exists(src):
-        file_io.create_dir(src)
     if not file_io.file_exists(dest):
         file_io.create_dir(dest)
     for filename in file_io.list_directory(src):
@@ -588,8 +588,6 @@ def copy_dir(src, dest):
 
 
 def copy_file(src, dest):
-    # src = os.path.abspath(src)
-    # dest = os.path.abspath(dest)
     if not file_io.file_exists(src):
         raise Exception("Src file doesn't exist at %s" % src)
     if file_io.is_directory(src):
