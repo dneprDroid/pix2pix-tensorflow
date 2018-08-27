@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+from tensorflow.python.lib.io import file_io  # for better file I/O
+
 import numpy as np
 import argparse
 import os
@@ -28,7 +30,10 @@ parser.add_argument("--checkpoint", default=None,
 
 ################################################################
 parser.add_argument("--seed", type=int)
-parser.add_argument("--max_steps", default=2 ** 32, type=int, help="number of training steps (0 to disable)")
+parser.add_argument("--max_steps",
+                    default=1,  # 2 ** 32,
+                    type=int,
+                    help="number of training steps (0 to disable)")
 parser.add_argument("--max_epochs", default=200, type=int, help="number of training epochs")
 parser.add_argument("--summary_freq", type=int, default=100, help="update summaries every summary_freq steps")
 parser.add_argument("--progress_freq", type=int, default=50, help="display progress every progress_freq steps")
@@ -259,13 +264,13 @@ def lab_to_rgb(lab):
 
 
 def load_examples():
-    if a.input_dir is None or not os.path.exists(a.input_dir):
+    if a.input_dir is None or not file_io.file_exists(a.input_dir):
         raise Exception("input_dir does not exist")
 
-    input_paths = glob.glob(os.path.join(a.input_dir, "*.jpg"))
+    input_paths = file_io.get_matching_files(os.path.join(a.input_dir, "*.jpg"))
     decode = tf.image.decode_jpeg
     if len(input_paths) == 0:
-        input_paths = glob.glob(os.path.join(a.input_dir, "*.png"))
+        input_paths = file_io.get_matching_files(os.path.join(a.input_dir, "*.png"))
         decode = tf.image.decode_png
 
     if len(input_paths) == 0:
@@ -518,8 +523,8 @@ def create_model(inputs, targets):
 
 def save_images(fetches, step=None):
     image_dir = os.path.join(a.output_dir, "images")
-    if not os.path.exists(image_dir):
-        os.makedirs(image_dir)
+    if not file_io.file_exists(image_dir):
+        file_io.create_dir(image_dir)
 
     filesets = []
     for i, in_path in enumerate(fetches["paths"]):
@@ -540,10 +545,10 @@ def save_images(fetches, step=None):
 
 def append_index(filesets, step=False):
     index_path = os.path.join(a.output_dir, "index.html")
-    if os.path.exists(index_path):
-        index = open(index_path, "a")
+    if file_io.file_exists(index_path):
+        index = file_io.FileIO(index_path, "a")
     else:
-        index = open(index_path, "w")
+        index = file_io.FileIO(index_path, "w")
         index.write("<html><body><table><tr>")
         if step:
             index.write("<th>step</th>")
@@ -563,6 +568,34 @@ def append_index(filesets, step=False):
     return index_path
 
 
+def copy_dir(src, dest):
+    if not file_io.file_exists(src):
+        raise Exception("Src dir doesn't exist at %s" % src)
+    if not file_io.file_exists(dest):
+        raise Exception("Dest dir doesn't exist at %s" % dest)
+    if not file_io.is_directory(src):
+        copy_file(src, dest)
+        return
+    for filename in file_io.list_directory(src):
+        new_src = os.path.join(src, filename)
+        new_dest = os.path.join(dest, filename)
+        copy_file(new_src, new_dest)
+
+
+def copy_file(src, dest):
+    # src = os.path.abspath(src)
+    # dest = os.path.abspath(dest)
+    if not file_io.file_exists(src):
+        raise Exception("Src file doesn't exist at %s" % src)
+    if file_io.is_directory(src):
+        copy_dir(src, dest)
+        return
+    file_io.copy(src, dest, overwrite=True)
+    # with file_io.FileIO(src, mode='r') as input_f:
+    #     with file_io.FileIO(dest, mode='w+') as output_f:
+    #         output_f.write(input_f.read())
+
+
 def main():
     if a.seed is None:
         a.seed = random.randint(0, 2 ** 31 - 1)
@@ -571,8 +604,8 @@ def main():
     np.random.seed(a.seed)
     random.seed(a.seed)
 
-    if not os.path.exists(a.output_dir):
-        os.makedirs(a.output_dir)
+    if not file_io.file_exists(a.output_dir):
+        file_io.create_dir(a.output_dir)
 
     if a.mode == "test" or a.mode == "export":
         if a.checkpoint is None:
@@ -592,7 +625,7 @@ def main():
     for k, v in a._get_kwargs():
         print(k, "=", v)
 
-    with open(os.path.join(a.output_dir, "options.json"), "w") as f:
+    with file_io.FileIO(os.path.join(a.output_dir, "options.json"), "w") as f:
         f.write(json.dumps(vars(a), sort_keys=True, indent=4))
 
     if a.mode == "export":
@@ -648,9 +681,10 @@ def main():
             checkpoint = tf.train.latest_checkpoint(a.checkpoint)
             restore_saver.restore(sess, checkpoint)
             print("exporting model")
-            export_saver.export_meta_graph(filename=os.path.join(a.output_dir, "export.meta"))
-            export_saver.save(sess, os.path.join(a.output_dir, "export"), write_meta_graph=False)
-
+            local_out_dir = 'models_local'
+            export_saver.export_meta_graph(filename=os.path.join(local_out_dir, "export.meta"))
+            export_saver.save(sess, os.path.join(local_out_dir, "export"), write_meta_graph=False)
+            copy_file(os.path.join(local_out_dir, "export"), os.path.join(a.output_dir, "export"))
         return
 
     examples = load_examples()
@@ -826,8 +860,8 @@ def main():
 
                 if should(a.save_freq):
                     print("saving model")
-                    saver.save(sess, os.path.join(a.output_dir, "model"), global_step=sv.global_step)
-
+                    saver.save(sess, "sever_local_dir/model", global_step=sv.global_step)
+                    copy_file("sever_local_dir", a.output_dir)
                 if sv.should_stop():
                     break
 
