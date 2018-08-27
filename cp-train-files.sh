@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-gsutil mkdir gs://$BUCKET_NAME/facades && gsutil cp -R facades gs://$BUCKET_NAME/facades
+export BUCKET_NAME="ovechko-deep"
+
+#gsutil mkdir gs://$BUCKET_NAME/facades
+gsutil cp -R $1 gs://$BUCKET_NAME
