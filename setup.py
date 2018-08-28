@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(name='pix_pix',
       version='1.0',
-      python_requires='==3.6',
+      # python_requires='==3.6',
       packages=find_packages(),
       include_package_data=True,
       description='.......',
