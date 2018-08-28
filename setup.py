@@ -12,6 +12,6 @@ setup(name='pix_pix',
       license='Unlicense',
       install_requires=[
           'tensorflow==1.10.0',
-          'numpy',
+          'numpy==1.15.0',
           'argparse'],
       zip_safe=False)
