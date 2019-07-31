@@ -8,7 +8,7 @@ setup(name='pix_pix',
       include_package_data=True,
       description='.......',
       author='Alex',
-      author_email='ovechko.056@gmail.com',
+      author_email='',
       license='Unlicense',
       install_requires=[
           'tensorflow==1.10.0',
